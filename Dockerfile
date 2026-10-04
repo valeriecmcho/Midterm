@@ -21,7 +21,8 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
 # Enable .htaccess overrides and configure environment variables passing
 RUN printf '<Directory /var/www/html/public>\n    Options -Indexes +FollowSymLinks\n    AllowOverride All\n    Require all granted\n</Directory>\n' >> /etc/apache2/apache2.conf \
-    && printf 'PassEnv MYSQLHOST MYSQLUSER MYSQLPASSWORD MYSQLDATABASE MYSQLPORT MYSQL_URL DATABASE_URL RAILWAY_PUBLIC_DOMAIN CI_ENVIRONMENT APP_BASE_URL PORT\n' >> /etc/apache2/apache2.conf
+    && printf 'PassEnv MYSQLHOST MYSQLUSER MYSQLPASSWORD MYSQLDATABASE MYSQLPORT MYSQL_URL DATABASE_URL RAILWAY_PUBLIC_DOMAIN CI_ENVIRONMENT APP_BASE_URL PORT\n' >> /etc/apache2/apache2.conf \
+    && echo 'variables_order = "EGPCS"' > /usr/local/etc/php/conf.d/docker-vars.ini
 
 WORKDIR /var/www/html
 
@@ -36,6 +37,7 @@ RUN mkdir -p /var/www/html/writable/cache \
              /var/www/html/public/uploads/avatars \
              /var/www/html/public/uploads/products \
     && chmod -R 777 /var/www/html/writable /var/www/html/public/uploads \
+    && sed -i '1s/^\xef\xbb\xbf//' /var/www/html/start.sh \
     && sed -i 's/\r$//' /var/www/html/start.sh \
     && chmod +x /var/www/html/start.sh
 

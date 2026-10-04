@@ -1,15 +1,11 @@
-﻿#!/bin/bash
+#!/bin/bash
 set -e
 
 # Update Apache port for dynamic $PORT injected by Railway
 PORT="${PORT:-80}"
 echo "Configuring Apache to listen on port ${PORT}..."
-sed -i "s/80/${PORT}/g" /etc/apache2/ports.conf /etc/apache2/sites-available/*.conf
-
-# Export environment variables to Apache envvars so mod_php receives them
-printenv | grep -E '^(MYSQL|RAILWAY|CI_|APP_|PORT|DATABASE_URL)' | while read -r line; do
-    echo "export $line" >> /etc/apache2/envvars
-done
+sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf
+sed -i "s/<VirtualHost \*:80>/<VirtualHost \*:${PORT}>/g" /etc/apache2/sites-available/*.conf
 
 # Ensure writable directories exist with full read/write permissions
 mkdir -p /var/www/html/writable/cache \
