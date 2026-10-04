@@ -1,0 +1,9 @@
+.git
+.env
+writable/logs/*
+writable/session/*
+writable/cache/*
+writable/debugbar/*
+tests
+phpunit.xml.dist
+README.md
